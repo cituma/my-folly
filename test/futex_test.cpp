@@ -13,6 +13,10 @@ public:
 
     void Wait(uint32_t wait_mask);
     void Wake(uint32_t wait_mask);
+
+    uint32_t state() {
+        return _state.load(std::memory_order_acquire);
+    }
 private:
     std::atomic<uint32_t> _state;
 };
@@ -45,6 +49,7 @@ TEST(FutexTest, spsc) {
     std::thread t2([&futex_demo]() {
             std::cout << "thread2" << std::endl;
             futex_demo.Wake(0xFFFFFFFF);
+            std::cout << "futex val:" << futex_demo.state() << std::endl;
             });
 
     if(t1.joinable()) {

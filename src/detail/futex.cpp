@@ -1,4 +1,4 @@
-#include "futex.h"
+#include "detail/futex.h"
 
 #ifdef __linux__
 #include <linux/futex.h>      /* Definition of FUTEX_* constants */

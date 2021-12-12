@@ -44,7 +44,12 @@ typename TargetClock::time_point time_point_conv(
 
 /*
  * addr: 锁之间共享内存地址, 用于保存锁的状态
- * expected: 
+ * expected: 该值与addr内的值相同, 如果不同，则无法上锁。
+ *           所以在上锁前需要获取addr内的值赋给expected。
+ *           这个值设置的目的是为了防止丢失wake的操作。
+ *           如果另一个线程在基于前面的数值阻塞调用之后，修改了这个值，
+ *           另一个线程在数值改变之后，且调用FUTEX_WAIT之前, 执行了FUTEX_WAKE操作,
+ *           这个调用的线程就会观察到数值变换并且无法唤醒。
  */
 FutexResult nativeFutexWait(
     const void* addr,
