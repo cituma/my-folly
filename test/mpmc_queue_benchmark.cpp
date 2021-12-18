@@ -10,7 +10,7 @@
 #include <iomanip>
 
 #include "mpmc_queue.h"
-//#include "mpmc_cas_queue.h"
+#include "bounded_queue.h"
 
 using namespace myfolly;
 
@@ -162,7 +162,7 @@ void runTryEnqDeqTest(int numThreads, int numOps) {
 void mt_test_enq_deq() {
     int nts[] = {1, 4, 10, 50, 100};
 
-    int32_t n = 10000000;
+    int32_t n = 1000000;
     {
         std::cout << "Test normal queue:" << std::endl;
         uint64_t all_time = 0;
@@ -171,10 +171,25 @@ void mt_test_enq_deq() {
             runTryEnqDeqTest<NormalQueue<uint64_t>>(nt, n);
             auto normal_queue_time = now_real_us() - start;
             std::cout << "thread num:" << std::setw(4) << nt
-              << ". norm queue time: " << normal_queue_time << " us" << std::endl;
+              << ". normal  queue time: " << normal_queue_time << " us" << std::endl;
             all_time += normal_queue_time;
         }
-        std::cout << "norm queue time: " << all_time << " us" << std::endl;
+        std::cout << "normal  queue time: " << all_time << " us" << std::endl;
+    }
+    std::cout << std::endl;
+
+    {
+        std::cout << "Test bounded queue:" << std::endl;
+        uint64_t all_time = 0;
+        for (int nt : nts) {
+            auto start = now_real_us();
+            runTryEnqDeqTest<BoundedQueue<uint64_t>>(nt, n);
+            auto run_time = now_real_us() - start;
+            std::cout << "thread num:" << std::setw(4) << nt
+              << ". bounded queue time: " << run_time << " us" << std::endl;
+            all_time += run_time;
+        }
+        std::cout << "bounded queue time: " << all_time << " us" << std::endl;
     }
     std::cout << std::endl;
 
@@ -186,10 +201,10 @@ void mt_test_enq_deq() {
             runTryEnqDeqTest<MPMCQueue<uint64_t>>(nt, n);
             auto mpmc_queue_time = now_real_us() - start;
             std::cout << "thread num:" << std::setw(4) << nt
-              << ". mpmc queue time: " << mpmc_queue_time << " us" << std::endl;
+              << ". mpmc    queue time: " << mpmc_queue_time << " us" << std::endl;
             all_time += mpmc_queue_time;
         }
-        std::cout << "mpmc queue time: " << all_time << " us" << std::endl;
+        std::cout << "mpmc    queue time: " << all_time << " us" << std::endl;
     }
 }
 
