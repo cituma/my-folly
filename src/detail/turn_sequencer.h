@@ -45,6 +45,11 @@ public:
         _state(encode(firstTurn << kTurnShift, 0)) {}
     ~TurnSequencer() {}
 
+    bool isTurn(const uint32_t turn) const noexcept {
+        auto state = _state.load(std::memory_order_acquire);
+        return decodeCurrentSturn(state) == (turn << kTurnShift);
+    }
+
     void waitForTurn(const uint32_t turn,
             std::atomic<uint32_t>& spinCutoff,
             const bool updateSpinCutoff);

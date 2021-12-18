@@ -12,3 +12,9 @@ add_executable(turn_sequencer_test
 target_link_libraries(turn_sequencer_test
     ${PROJECT_NAME}
     ${GTEST_LIBRARIES})
+
+add_executable(mpmc_queue_benchmark
+    ${CMAKE_CURRENT_SOURCE_DIR}/mpmc_queue_benchmark.cpp)
+target_link_libraries(mpmc_queue_benchmark
+    ${PROJECT_NAME}
+    ${GTEST_LIBRARIES})
